@@ -1,0 +1,145 @@
+{% extends 'core/base.html' %}
+
+{% load static browseextras %}
+
+{% block title %} {{title}} {% endblock %}
+
+{% block style %}
+<style>
+    .checkbox-button input[type='checkbox'] {
+        display: none;
+    }
+    
+    .checkbox-button label {
+        display: inline-block;
+        width: 100%;
+        margin: 5px;
+        background-color: #155e75;
+        color: #ffffff;
+        padding: 5px 10px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    .checkbox-button label.categories:hover {
+        background-color: #134e4a;
+    }
+    
+
+    .checkbox-button input[type='checkbox']:checked + label.categories {
+        background-color: #134e4a;
+    }
+</style>
+    
+{% endblock %}
+
+{% block content %}
+    <h2 class="mb-3 text-center font-semibold text-2xl">Browse Products</h2>
+
+    <div class="p-5 flex gap-4">
+        <!-- Filter -->
+        <div class="min-w-fit bg-rose-3 p-5 bg-cyan-950 rounded-xl">
+            <h1 class="mb-5 text-2xl font-semibold text-center">Filter</h1>
+
+            <form method="get" action=".">
+                <!-- Query -->
+                <input name="query" value="{{query}}" type="text" class="w-full mb-5 py-2 px-3 bg-cyan-800 rounded-xl" placeholder="Search for an product...">
+
+                <!-- Price -->
+                <h2 class="text-center font-semibold">By Price</h2>
+
+                <div id="price_filter" class="mt-3 w-full flex flex-col">
+                    <input id="range_slider" type="range" value="{% if max_price %}{{ max_price }}{% else %}{{ min_max_price.price__min|floatformat:2 }}{% endif %}" name="range" min="{{min_max_price.price__min}}" max="{{min_max_price.price__max}}" value="" oninput="max_price.value=this.value">
+
+                    <div class="mt-5 text-sm flex justify-between">
+                        <span>Min: ${{min_max_price.price__min|floatformat:2}}</span>
+                        <span>Max: ${{min_max_price.price__max|floatformat:2}}</span>
+                    </div>
+
+                    <input id="max_price" type="number" value="{{max_price}}" name="max-price" min="{{min_max_price.price__min}}" max="{{min_max_price.price__max}}" onkeyup="range_slider.value=this.value" class="mt-1 px-3 py-1 rounded-lg bg-cyan-800" placeholder="Max price">
+                
+                    <input type="submit" value="Filter" class="w-max mx-auto mt-5 px-3 py-1 rounded-lg bg-cyan-800 hover:bg-cyan-900 transition duration-300 ease-in-out">
+                </div>
+
+                <!-- Category -->
+                <h2 class="my-3 text-center font-semibold">By Category</h2>
+
+                <div class="checkbox-button flex flex-col gap-2 rounded-lg">
+                    {% for category in category_form.categories %}
+                    <div>
+                        {{category.tag}}
+                        <label for="id_categories_{{forloop.counter0}}" class="categories text-center">{{category.choice_label}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </form>
+
+            <hr class="my-5">
+
+            <div class="w-max mx-auto">
+                <a href="{% url 'browse:index' %}" class="py-1 px-3 bg-yellow-500 rounded-lg hover:bg-yellow-700 transition duration-300 ease-in-out">Clear Filter</a>
+            </div>
+
+        </div>
+
+        <!-- Products -->
+        <div class="w-full bg-cyan-950 rounded-xl">
+            <div class="flex flex-wrap justify-evenly items-center gap-5 p-4">
+            {% if products %}
+                {% for product in products %}
+                    <a href="{% url 'product:detail' product.id %}" class="w-96 rounded-xl bg-cyan-950 hover:bg-cyan-900 hover:scale-105 transition duration-300 ease-in-out">
+
+                        {% if product.image %}
+                        <div id="product_{{ forloop.counter0 }}_image" class="w-full h-80 rounded-t-xl overflow-hidden">
+                            <img src="{{ product.image.url }}" alt="{{product.name}}" class="w-full h-full object-cover">
+                        </div>
+                        {% else %}
+                        <div id="product_{{ forloop.counter0 }}_image" class="w-2/5 h-60 bg-gray-800 rounded-t-xl flex items-center justify-center">
+                            <span class="text-gray-500">No image available</span>
+                        </div>
+                        {% endif %}
+
+
+                        <div class="p-6 bg-cyan-800 rounded-b-xl hover:bg-cyan-900">
+                            <h2 class="text-2xl font-semibold text-cyan-500">{{ product.name }}</h2>
+                            <p class="text-xl text-black">${{ product.price }}</p>
+                        </div>
+
+                    </a>
+                {% endfor %}
+            {% else %}
+                <h2 class="text-center">No product found!!</h2>
+            {% endif %}
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <!-- Page Navigator -->
+    <div class="pagination">
+        <span class="step-links flex justify-center gap-4">
+            {% with request.GET|remove_page_param as params_without_page %}
+                    
+                    
+                    <a href="?page=1&{{ params_without_page }}" class="px-2 py-2 rounded-lg bg-cyan-950 hover:scale-90 {% if not products.has_previous %} scale-90 bg-gray-700 pointer-events-none {% endif %}">&laquo; First</a>
+                    <a href="{% if products.has_previous %}?page={{ products.previous_page_number }}&{{ params_without_page }}{% endif %}" class="px-2 py-2 rounded-lg bg-cyan-950 hover:scale-90 {% if not products.has_previous %} scale-90 bg-gray-700 pointer-events-none {% endif %}">Previous</a>
+                    
+
+                    <span class="current px-5 py-2 rounded-full bg-cyan-950">
+                        Page {{ products.number }} of {{ products.paginator.num_pages }}
+                    </span>
+                
+                
+                    <a href="{% if products.has_next %}?page={{ products.next_page_number }}&{{ params_without_page }}{% endif %}" class="px-2 py-2 rounded-lg bg-cyan-950 hover:scale-90 {% if not products.has_next %} scale-90 bg-gray-700 pointer-events-none {% endif %}">Next</a>
+                    <a href="?page={{ products.paginator.num_pages }}&{{ params_without_page }}" class="px-2 py-2 rounded-lg bg-cyan-950 hover:scale-90 {% if not products.has_next %} scale-90 bg-gray-700 pointer-events-none {% endif %}">Last &raquo;</a>
+                
+       
+            {% endwith %}
+        </span>
+    </div>
+
+{% endblock %}

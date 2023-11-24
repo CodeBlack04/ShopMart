@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+<div class="lg:w-4/5 xl:w-3/5 my-6 mx-auto p-6 bg-cyan-950 rounded-xl">
+    <h1 class="mb-6 text-3xl text-center">{{ title }}</h1>
+
+    <form method="post" action="." enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% for field in form %}
+			<div class="mb-3">
+	    		<label class="inline-block mb-2">{{ field.label_tag }}</label><br>
+	        	{{ field }}
+			</div>
+		{% endfor %}
+
+        {% if form.errors or form.non_field_errors %}
+        <div class="mb-3 p-6 bg-red-100 rounded-xl">
+            {% for field in form %}
+                {{ field.errors }}
+            {% endfor %}
+
+            {{ form.non_field_errors }}
+        </div>  
+        {% endif %}          
+        <button class="py-1 px-6 mt-5 bg-teal-500 hover:bg-teal-700 rounded-xl transition duration-300 ease-in-out">List</button>
+    </form>
+</div>
+{% endblock %}

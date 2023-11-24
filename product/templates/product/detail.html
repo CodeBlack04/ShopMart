@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% load static %} <!-- payment -->
+
+{% block title %} {{ product.name }} {% endblock %}
+
+{% block head %}
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'payment/stripe.js' %}"></script>   <!-- new -->
+{% endblock %}
+
+{% block content %}
+    <div class="flex flex-col md:flex-row gap-5 justify-evenly">
+
+        {% if product.image %}
+        <div class="w-full h-[600px] md:w-3/5 rounded-xl overflow-hidden border-8 border-cyan-950"> 
+            <img src="{{ product.image.url }}" class="w-full h-full object-cover">
+        </div>
+        {% else %}
+        <div class="w-full h-[600px] md:w-3/5 rounded-xl overflow-hidden border-8 border-cyan-950"> 
+            <h1 class="w-full h-full flex justify-center items-center text-gray-300">No image available</h1>
+        </div>
+        {% endif %}
+
+        <div class="w-full md:w-2/5 p-6 bg-cyan-950 rounded-xl">
+            <h1 class="mb-6 text-3xl font-bold text-cyan-500">{{ product.name }}</h1>
+            <p class="text-gray-300 text-xl font-semibold">Price: ${{ product.price }}</p>
+            <p class="text-gray-300 text-lg font-semibold">Seller: {{ product.created_by.username }}</p>
+
+        {% if product.description %}
+            <p class="text-gray-500">Description: {{ product.description }}<strong class="text-gray-500"></strong></p>
+        {% endif %}
+        {% if product.is_sold %}
+            <p class="text-3xl font-bold text-gray-500">SOLD</p>
+        {% endif %}
+        {% if product.is_reserved %}
+            <p class="text-gray-700"><strong class="text-gray-500">This product is reserved and awaiting for payment.</strong></p>
+        {% endif %}
+        {% if product.created_by == request.user %}
+            <a href="{% url 'product:edit' product.id %}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700 transition duration-300 ease-in-out">Edit</a>
+            <a href="{% url 'product:delete' product.id %}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-red-500 text-white rounded-xl hover:bg-red-700 transition duration-300 ease-in-out">Delete</a>
+        {% else %}
+            <a href="{% url 'chat:new-chatroom' product.id %}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700 transition duration-300 ease-in-out">Contact Seller</a>
+            <button id="submitBtn" product-pk="{{product.id}}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-blue-500 text-white rounded-xl hover:bg-blue-700 transition duration-300 ease-in-out {% if product.is_sold or product.is_reserved %} bg-gray-400 pointer-events-none {% endif %}">Purchase</button>
+        {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-6 px-5 py-12 bg-cyan-950 rounded-xl">
+        <h2 class="mb-12 text-3xl font-semibold text-center">Related products</h2>
+        <div class="flex flex-col md:flex-row md:flex-wrap gap-5 justify-evenly items-center">
+            {% for product in related_products %}
+                    <a href="{% url 'product:detail' product.id %}" class="w-96 hover:scale-105 transition duration-300 ease-in-out">
+                        <div class="w-full h-80 rounded-t-xl overflow-hidden">
+                            <img src="{{ product.image.url }}" alt="product-image" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6 bg-cyan-900 rounded-b-xl">
+                            <h2 class="text-2xl font-semibold text-cyan-500">{{ product.name }}</h2>
+                            <p class="text-black">${{ product.price }}</p>
+                        </div>
+                    </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
