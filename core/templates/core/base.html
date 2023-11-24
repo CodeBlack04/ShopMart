@@ -61,7 +61,7 @@
 
         <div class="w-1/3 space-x-4 flex justify-end">
             {% if request.user.is_authenticated %}
-            <p class="inline-block text-sm text-cyan-900">LoggedIn As {{ request.user.username|upper }}</p>
+            <p class="inline-block flex items-center text-sm text-cyan-900">LoggedIn As {{ request.user.username|upper }}</p>
             <a href="{% url 'myauth:logout' %}" class="px-4 py-1 bg-red-500 text-white rounded-full hover:bg-red-700 shadow-lg transition duration-300 ease-in-out">Logout</a>
             {% else %}
             <a href="{% url 'myauth:login' %}" class="px-4 py-1 bg-cyan-800 rounded-full hover:bg-cyan-900 shadow-lg transition duration-300 ease-in-out">LogIn</a>
