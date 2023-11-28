@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from product.models import Product, Category
 
 from django.conf import settings
-import stripe
 from unittest.mock import patch, MagicMock
 
 
