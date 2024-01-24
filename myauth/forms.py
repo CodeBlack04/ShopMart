@@ -5,18 +5,18 @@ from django import forms
 
 class MyPasswordResetForm(PasswordResetForm):
     email = forms.CharField(widget=forms.EmailInput(attrs={
-        'class': 'w-full py-4 px-6 rounded-xl'
+        'class': 'w-full py-4 px-6 rounded-xl text-black'
     }))
 
 class MySetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(label='New password', widget=forms.PasswordInput(attrs={
         'placeholder': 'New password',
-        'class': 'w-full py-4 px-6 rounded-xl'
+        'class': 'w-full py-4 px-6 rounded-xl text-black'
     }))
 
     new_password2 = forms.CharField(label='Repeat new password', widget=forms.PasswordInput(attrs={
         'placeholder': 'New password confirmation',
-        'class': 'w-full py-4 px-6 rounded-xl'
+        'class': 'w-full py-4 px-6 rounded-xl text-black'
     }))
 
 
