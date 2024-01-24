@@ -36,12 +36,19 @@
         {% if product.is_reserved %}
             <p class="text-gray-700"><strong class="text-gray-500">This product is reserved and awaiting for payment.</strong></p>
         {% endif %}
+
+        {% if request.user.is_authenticated %}
+
         {% if product.created_by == request.user %}
             <a href="{% url 'product:edit' product.id %}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700 transition duration-300 ease-in-out">Edit</a>
             <a href="{% url 'product:delete' product.id %}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-red-500 text-white rounded-xl hover:bg-red-700 transition duration-300 ease-in-out">Delete</a>
         {% else %}
             <a href="{% url 'chat:new-chatroom' product.id %}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700 transition duration-300 ease-in-out">Contact Seller</a>
             <button id="submitBtn" product-pk="{{product.id}}" class="inline-block mt-6 px-6 py-1 text-lg font-semibold bg-blue-500 text-white rounded-xl hover:bg-blue-700 transition duration-300 ease-in-out {% if product.is_sold or product.is_reserved %} bg-gray-400 pointer-events-none {% endif %}">Purchase</button>
+        {% endif %}
+
+        {% else %}
+            <h1 class="mt-5 text-xl font-bold text-cyan-500">Please log in to edit, delete and purchase product!!</h1>
         {% endif %}
         </div>
     </div>
