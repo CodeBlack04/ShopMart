@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*xz9m-r%1hhegi^hs@o3pj&acm)l5agulb9h9pr=#w!9t*c4ud'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
+ALLOWED_HOSTS = ['165.232.179.107', '127.0.0.1']
 
 # Login settings
 
@@ -56,10 +62,9 @@ EXPIRE_AFTER = '15d'
 
 # Stripe keys
 
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51Nwg5MKl2OcSzkOf4aqQ7WDinUnwdAEbu7O41PMW08cWgPzM7rwURfOLfuUeHs359uO02WtQuoAwCpiSt8CG9YRU00jdYMMu4B'
-STRIPE_SECRET_KEY = 'sk_test_51Nwg5MKl2OcSzkOfKulAD2iNt3DzXsiJNB5Ek8AY8Z0gUVegUTlCrdLqhxCZcWhPHYgxnpgaGOKyIAq4LqS8PXh200pFmVMANp'
-
-STRIPE_ENDPOINT_SECRET = 'whsec_f62a31d2f40081d18468ad0467710eae862ffa13f1250e0084c72b3f50047ad0'
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_ENDPOINT_SECRET = os.environ.get('STRIPE_ENDPOINT_SECRET')
 
 
 # Application definition
@@ -75,7 +80,7 @@ INSTALLED_APPS = [
     'payment',
 
     "verify_email.apps.VerifyEmailConfig",
-    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -162,10 +167,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR/'media'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'whole-static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
